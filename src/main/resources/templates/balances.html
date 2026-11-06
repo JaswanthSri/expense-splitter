@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Balances</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>Expense Splitter</h2>
+
+    <div>
+        <a href="/">Dashboard</a>
+        <a href="/friends">Friends</a>
+        <a href="/groups">Groups</a>
+        <a href="/expenses">Expenses</a>
+        <a href="/balances">Balances</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h1>Group Balances</h1>
+
+    <div class="card">
+
+        <h2>Select Group</h2>
+
+        <form action="/balances" method="get">
+
+            <select name="groupId" required>
+
+                <option value="">Select a group</option>
+
+                <option
+                    th:each="group : ${groups}"
+                    th:value="${group.id}"
+                    th:text="${group.name}"
+                    th:selected="${selectedGroupId != null and selectedGroupId == group.id}">
+                </option>
+
+            </select>
+
+            <button type="submit">View Balances</button>
+
+        </form>
+
+    </div>
+
+    <div class="card" th:if="${selectedGroup != null}">
+
+        <h2 th:text="${selectedGroup.name} + ' - Balances'"></h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Friend</th>
+                    <th>Net Balance</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="balance : ${balances}">
+
+                    <td th:text="${balance.friendName}"></td>
+
+                    <td>
+                        ₹<span th:text="${#numbers.formatDecimal(balance.netBalance, 1, 2)}"></span>
+                    </td>
+
+                    <td>
+
+                        <span
+                            th:if="${balance.netBalance.compareTo(T(java.math.BigDecimal).ZERO) > 0}"
+                            class="positive">
+                            Gets money back
+                        </span>
+
+                        <span
+                            th:if="${balance.netBalance.compareTo(T(java.math.BigDecimal).ZERO) < 0}"
+                            class="negative">
+                            Owes money
+                        </span>
+
+                        <span
+                            th:if="${balance.netBalance.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                            class="neutral">
+                            Settled
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(balances)}">
+                    <td colspan="3">No members in this group.</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <p class="subtitle">
+            Positive balances indicate money to receive.
+            Negative balances indicate money owed.
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>

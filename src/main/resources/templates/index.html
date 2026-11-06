@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Splitter</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>Expense Splitter</h2>
+
+    <div>
+        <a href="/">Dashboard</a>
+        <a href="/friends">Friends</a>
+        <a href="/groups">Groups</a>
+        <a href="/expenses">Expenses</a>
+        <a href="/balances">Balances</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h1>Welcome to Expense Splitter</h1>
+
+    <p class="subtitle">
+        Manage shared expenses and keep track of group balances.
+    </p>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Friends</h3>
+            <h1 th:text="${friendCount}">0</h1>
+        </div>
+
+        <div class="card">
+            <h3>Total Groups</h3>
+            <h1 th:text="${groupCount}">0</h1>
+        </div>
+
+        <div class="card">
+            <h3>Total Expenses</h3>
+            <h1 th:text="${expenseCount}">0</h1>
+        </div>
+
+    </div>
+
+    <h2>Quick Actions</h2>
+
+    <div class="actions">
+
+        <a class="button" href="/friends">Add Friends</a>
+
+        <a class="button" href="/groups">Create Group</a>
+
+        <a class="button" href="/expenses">Add Expense</a>
+
+        <a class="button" href="/balances">View Balances</a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

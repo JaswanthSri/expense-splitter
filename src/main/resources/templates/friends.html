@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Friends</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>Expense Splitter</h2>
+
+    <div>
+        <a href="/">Dashboard</a>
+        <a href="/friends">Friends</a>
+        <a href="/groups">Groups</a>
+        <a href="/expenses">Expenses</a>
+        <a href="/balances">Balances</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h1>Manage Friends</h1>
+
+    <div th:if="${success}" class="success" th:text="${success}"></div>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <div class="card">
+
+        <h2>Add New Friend</h2>
+
+        <form action="/friends" method="post">
+
+            <label>Friend Name</label>
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Enter friend's name"
+                required
+            >
+
+            <button type="submit">Add Friend</button>
+
+        </form>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Friends List</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="friend : ${friends}">
+                    <td th:text="${friend.id}"></td>
+                    <td th:text="${friend.name}"></td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(friends)}">
+                    <td colspan="2">No friends added yet.</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

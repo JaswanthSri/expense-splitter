@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Groups</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>Expense Splitter</h2>
+
+    <div>
+        <a href="/">Dashboard</a>
+        <a href="/friends">Friends</a>
+        <a href="/groups">Groups</a>
+        <a href="/expenses">Expenses</a>
+        <a href="/balances">Balances</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h1>Manage Groups</h1>
+
+    <div th:if="${success}" class="success" th:text="${success}"></div>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <div class="card">
+
+        <h2>Create New Group</h2>
+
+        <form action="/groups" method="post">
+
+            <label>Group Name</label>
+
+            <input
+                type="text"
+                name="name"
+                placeholder="Example: Goa Trip"
+                required
+            >
+
+            <label>Select Group Members</label>
+
+            <div th:each="friend : ${friends}" class="checkbox-row">
+
+                <input
+                    type="checkbox"
+                    name="memberIds"
+                    th:value="${friend.id}"
+                >
+
+                <span th:text="${friend.name}"></span>
+
+            </div>
+
+            <p th:if="${#lists.isEmpty(friends)}">
+                Add friends before creating a group.
+            </p>
+
+            <button type="submit">Create Group</button>
+
+        </form>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Existing Groups</h2>
+
+        <div th:each="group : ${groups}" class="group-item">
+
+            <h3 th:text="${group.name}"></h3>
+
+            <p>
+                Members:
+                <span
+                    th:each="member, status : ${group.members}"
+                    th:text="${member.name} + (${status.last} ? '' : ', ')">
+                </span>
+            </p>
+
+            <a
+                class="button small"
+                th:href="@{/balances(groupId=${group.id})}">
+                View Balances
+            </a>
+
+        </div>
+
+        <p th:if="${#lists.isEmpty(groups)}">
+            No groups created yet.
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>
