@@ -29,14 +29,20 @@ jobs:
           --health-cmd "pg_isready -U expense_app -d expense_splitter"
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
 
-      env:
-      	DB_URL: jdbc:postgresql://localhost:5432/expense_splitter
-      	DB_USERNAME: expense_app
-      	DB_PASSWORD: ci_test_password
-      	AWS_REGION: ${{ secrets.AWS_REGION }}
-      	ECR_REPOSITORY: expense-splitter
+    env:
+      DB_URL: jdbc:postgresql://localhost:5432/expense_splitter
+      DB_USERNAME: expense_app
+      DB_PASSWORD: ci_test_password
+
+      # Explicit Spring Boot datasource configuration
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/expense_splitter
+      SPRING_DATASOURCE_USERNAME: expense_app
+      SPRING_DATASOURCE_PASSWORD: ci_test_password
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+
+      ECR_REPOSITORY: expense-splitter
 
     steps:
       - name: Checkout source code
@@ -56,8 +62,20 @@ jobs:
             ghcr.io/gitleaks/gitleaks:latest \
             dir --redact --exit-code 1 /repo
 
+      - name: Check PostgreSQL readiness
+        run: |
+          echo "Checking PostgreSQL connection..."
+          pg_isready -h localhost -p 5432 -U expense_app -d expense_splitter
+
+      - name: Display database configuration
+        run: |
+          echo "Database URL: $SPRING_DATASOURCE_URL"
+          echo "Database username: $SPRING_DATASOURCE_USERNAME"
+          echo "PostgreSQL driver: $SPRING_DATASOURCE_DRIVER_CLASS_NAME"
+          echo "Database password is configured (hidden)"
+
       - name: Build application and run tests
-        run: mvn -B clean verify
+        run: mvn -B -e clean verify
 
       - name: Configure AWS credentials
         if: github.event_name == 'push'
@@ -78,9 +96,16 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          echo "Building Docker image..."
+
           docker build \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
 
+          echo "Pushing commit-specific image..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+          echo "Pushing latest image..."
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+          echo "Docker image successfully pushed to ECR."
