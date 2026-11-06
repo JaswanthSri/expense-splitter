@@ -31,13 +31,12 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    env:
-      DB_URL: jdbc:postgresql://localhost:5432/expense_splitter
-      DB_USERNAME: expense_app
-      DB_PASSWORD: ci_test_password
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      ECR_REPOSITORY: expense-splitter
-      AWS_ACCOUNT_ID: "917914000501"
+      env:
+      	DB_URL: jdbc:postgresql://localhost:5432/expense_splitter
+      	DB_USERNAME: expense_app
+      	DB_PASSWORD: ci_test_password
+      	AWS_REGION: ${{ secrets.AWS_REGION }}
+      	ECR_REPOSITORY: expense-splitter
 
     steps:
       - name: Checkout source code
