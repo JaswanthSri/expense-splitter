@@ -1,0 +1,20 @@
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: expense-splitter-cluster
+  region: ap-south-1
+
+vpc:
+  nat:
+    gateway: Disable
+
+managedNodeGroups:
+  - name: expense-splitter-workers
+    instanceType: t3.medium
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 2
+    volumeSize: 20
+    privateNetworking: false
